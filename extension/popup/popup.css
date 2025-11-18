@@ -1,0 +1,415 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 400px;
+    min-height: 500px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: #f5f7fa;
+    color: #2c3e50;
+}
+
+.container {
+    padding: 16px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 16px 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin: -16px -16px 20px -16px;
+    border-radius: 0 0 12px 12px;
+}
+
+header h1 {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+header p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Status Box */
+.status-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#statusIndicator {
+    font-size: 12px;
+}
+
+#statusText {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Sections */
+section {
+    margin-bottom: 24px;
+}
+
+h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #2c3e50;
+}
+
+.help-text {
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 12px;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 12px;
+}
+
+.upload-area:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+}
+
+.upload-area.dragging {
+    border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.upload-area svg {
+    color: #667eea;
+    margin-bottom: 12px;
+}
+
+.upload-area p {
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.file-types {
+    font-size: 12px;
+    color: #95a5a6 !important;
+    margin-top: 8px;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Documents List */
+.documents-list {
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 100px;
+}
+
+.empty-state {
+    text-align: center;
+    color: #95a5a6;
+    padding: 32px;
+    font-size: 14px;
+}
+
+.document-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.document-item:last-child {
+    margin-bottom: 0;
+}
+
+.document-info {
+    flex: 1;
+}
+
+.document-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.document-meta {
+    font-size: 12px;
+    color: #95a5a6;
+}
+
+.document-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.btn-analyze {
+    background: #48bb78;
+    color: white;
+}
+
+.btn-delete {
+    background: #f56565;
+    color: white;
+}
+
+/* Analysis Results */
+.results-section {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.data-group {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.data-group h3 {
+    font-size: 16px;
+    color: #667eea;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.data-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.data-label {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.data-value {
+    font-size: 14px;
+    color: #667eea;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.copy-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    background: #5568d3;
+}
+
+.copy-btn.copied {
+    background: #48bb78;
+}
+
+/* Search Section */
+.search-section {
+    margin-bottom: 24px;
+}
+
+.search-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.search-results {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 12px;
+}
+
+.search-result {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+/* Loading spinner */
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Loading spinner sizing for buttons */
+.btn .spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* Better disabled button feedback */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Document item animation during operations */
+.document-item.processing {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Ensure loading text is visible */
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #667eea;
+}
+
+.loading .spinner {
+    width: 20px;
+    height: 20px;
+}
+
+/* FBR IRIS Form Section Styling */
+.data-group:last-of-type {
+    background: #e8f5e9;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.data-group:last-of-type h3 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px;
+    margin: 0;
+    border-radius: 8px 8px 0 0;
+    font-size: 15px;
+}
+
+.data-group:last-of-type > div {
+    padding: 16px;
+}
+
+.copy-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+
+.copy-btn:hover {
+    background: #5568d3;
+    transform: translateY(-1px);
+}
+
+.copy-btn.copied {
+    background: #48bb78;
+}
+
+/* Field styling for better readability */
+.data-field {
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}

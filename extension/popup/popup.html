@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaxEase</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🎯 TaxEase</h1>
+            <p>AI Tax Filing Assistant</p>
+        </header>
+
+        <!-- Connection Status -->
+        <div id="connectionStatus" class="status-box">
+            <span id="statusIndicator">🔴</span>
+            <span id="statusText">Checking connection...</span>
+            <span id="restoreBadge" style="display: none; background: #667eea; color: white; 
+                  padding: 4px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px;">
+                📋 Restored Data
+            </span>
+        </div>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <h2>Upload Tax Documents</h2>
+            <p class="help-text">Upload bank statements, receipts, or transaction summaries</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p>Click to upload or drag & drop</p>
+                <p class="file-types">PDF, JPG only (Max 10MB)</p>
+                <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg" hidden>
+            </div>
+
+            <button id="uploadBtn" class="btn btn-primary" disabled>
+                Upload Document
+            </button>
+        </section>
+
+        <!-- Documents List -->
+        <section class="documents-section">
+            <h2>Your Documents</h2>
+            <div id="documentsList" class="documents-list">
+                <p class="empty-state">No documents uploaded yet</p>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <h2>Search Your Documents</h2>
+            <p class="help-text">Ask questions about your uploaded documents</p>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g., What was my rent in January?" />
+                <button id="searchBtn" class="btn btn-primary">Search</button>
+            </div>
+            <div id="searchResults" class="search-results" style="display: none;"></div>
+        </section>
+
+        <!-- Analysis Results -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <h2>📊 Extracted Tax Data</h2>
+            <div id="analysisResults"></div>
+        </section>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
