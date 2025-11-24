@@ -3,17 +3,15 @@
   "name": "TaxEase - AI Tax Filing Assistant",
   "version": "1.0.0",
   "description": "AI-powered assistant to help file taxes on Pakistan's FBR IRIS portal",
-  
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "scripting"
   ],
-  
   "host_permissions": [
-    "http://localhost:8000/*",
+    "http://localhost:*/*",
     "https://iris.fbr.gov.pk/*"
   ],
-  
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -22,22 +20,38 @@
       "128": "assets/icon128.png"
     }
   },
-  
   "icons": {
     "16": "assets/icon16.png",
     "48": "assets/icon48.png",
     "128": "assets/icon128.png"
   },
-  
   "background": {
-    "service_worker": "background/background.js"
+    "service_worker": "background/background.js",
+    "type": "module"
   },
-  
   "content_scripts": [
     {
-      "matches": ["https://iris.fbr.gov.pk/*"],
-      "js": ["content/content.js"],
-      "css": ["content/content.css"]
+      "matches": [
+        "http://localhost:*/*",
+        "https://iris.fbr.gov.pk/*"
+      ],
+      "js": [
+        "utils/fbrAutofillIntegration.js",
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "utils/*.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

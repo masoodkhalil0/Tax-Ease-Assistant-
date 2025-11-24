@@ -35,7 +35,7 @@ async function saveDocumentState(documentId, documentData) {
             x: window.scrollX,
             y: window.scrollY
         };
-        
+
         await chrome.storage.local.set({
             lastViewedDocument: {
                 id: documentId,
@@ -65,28 +65,28 @@ async function restoreDocumentState() {
     try {
         const result = await chrome.storage.local.get(['lastViewedDocument']);
         const saved = result.lastViewedDocument;
-        
+
         if (saved && saved.id && saved.data) {
             console.log('📋 Found saved document:', saved.id);
-            
+
             // Show restore badge
             restoreBadge.style.display = 'inline-block';
-            
+
             // Auto-display the saved data (NO SCROLL)
             await displayExtractedData(saved.data, false);
-            
+
             // Restore scroll position
             if (saved.scrollPosition) {
                 setTimeout(() => {
                     window.scrollTo(saved.scrollPosition.x, saved.scrollPosition.y);
                 }, 100);
             }
-            
+
             // Hide badge after 3 seconds
             setTimeout(() => {
                 restoreBadge.style.display = 'none';
             }, 3000);
-            
+
             return true;
         }
         return false;
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkBackendConnection();
     loadDocuments();
     setupEventListeners();
-    
+
     // Try to restore previous document state
     const restored = await restoreDocumentState();
     if (restored) {
@@ -128,7 +128,7 @@ async function checkBackendConnection() {
 function updateStatus(isConnected, message) {
     statusIndicator.textContent = isConnected ? '🟢' : '🔴';
     statusText.textContent = message;
-    
+
     const statusElement = statusIndicator.parentElement;
     if (isConnected) {
         statusElement.style.background = '#d4edda';
@@ -143,31 +143,31 @@ function updateStatus(isConnected, message) {
 function setupEventListeners() {
     // Upload area click
     uploadArea.addEventListener('click', () => fileInput.click());
-    
+
     // File input change
     fileInput.addEventListener('change', handleFileSelect);
-    
+
     // Drag and drop
     uploadArea.addEventListener('dragover', handleDragOver);
     uploadArea.addEventListener('dragleave', handleDragLeave);
     uploadArea.addEventListener('drop', handleFileDrop);
-    
+
     // Upload button
     uploadBtn.addEventListener('click', uploadDocument);
-    
+
     // Search button
     searchBtn.addEventListener('click', performSearch);
-    
+
     // Enter key in search
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             performSearch();
         }
     });
-    
+
     // Event delegation for document action buttons
     documentsList.addEventListener('click', handleDocumentAction);
-    
+
     // Event delegation for copy buttons (NEW - fixes Issue #1)
     resultsSection.addEventListener('click', handleCopyClick);
 }
@@ -176,7 +176,7 @@ function handleFileSelect(e) {
     try {
         if (e.target.files.length > 0) {
             selectedFile = e.target.files[0];
-            
+
             // Validate file type - ONLY PDF and JPG
             const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg'];
             if (!allowedTypes.includes(selectedFile.type)) {
@@ -185,7 +185,7 @@ function handleFileSelect(e) {
                 fileInput.value = '';
                 return;
             }
-            
+
             // Validate file size (10MB)
             if (selectedFile.size > 10 * 1024 * 1024) {
                 alert('❌ File size must be less than 10MB!');
@@ -193,7 +193,7 @@ function handleFileSelect(e) {
                 fileInput.value = '';
                 return;
             }
-            
+
             showFilePreview(selectedFile);
             uploadBtn.disabled = false;
         }
@@ -215,11 +215,11 @@ function handleDragLeave() {
 function handleFileDrop(e) {
     e.preventDefault();
     uploadArea.classList.remove('dragging');
-    
+
     try {
         if (e.dataTransfer.files.length > 0) {
             selectedFile = e.dataTransfer.files[0];
-            
+
             // Validate file type
             const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg'];
             if (!allowedTypes.includes(selectedFile.type)) {
@@ -227,14 +227,14 @@ function handleFileDrop(e) {
                 selectedFile = null;
                 return;
             }
-            
+
             // Validate file size
             if (selectedFile.size > 10 * 1024 * 1024) {
                 alert('❌ File size must be less than 10MB!');
                 selectedFile = null;
                 return;
             }
-            
+
             fileInput.files = e.dataTransfer.files;
             showFilePreview(selectedFile);
             uploadBtn.disabled = false;
@@ -263,7 +263,7 @@ function showFilePreview(file) {
 // Button state management
 function setButtonLoading(button, text = 'Processing...') {
     if (!button) return;
-    
+
     button.disabled = true;
     button.dataset.originalText = button.textContent;
     button.innerHTML = `
@@ -274,7 +274,7 @@ function setButtonLoading(button, text = 'Processing...') {
 
 function resetButton(button) {
     if (!button || !button.dataset.originalText) return;
-    
+
     button.disabled = false;
     button.textContent = button.dataset.originalText;
     delete button.dataset.originalText;
@@ -286,35 +286,35 @@ async function uploadDocument() {
         alert('❌ Please select a file first');
         return;
     }
-    
+
     setButtonLoading(uploadBtn, 'Uploading...');
-    
+
     try {
         const formData = new FormData();
         formData.append('file', selectedFile);
-        
+
         const response = await fetch(`${API_BASE_URL}/api/documents/upload`, {
             method: 'POST',
             body: formData
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
             throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         // Reset
         selectedFile = null;
         fileInput.value = '';
         resetUploadArea();
-        
+
         // Reload documents
         await loadDocuments();
-        
+
         alert('✅ Document uploaded successfully! Click "Analyze" to extract data.');
-        
+
     } catch (error) {
         console.error('Upload error:', error);
         alert(`❌ Upload failed: ${error.message}`);
@@ -339,11 +339,11 @@ function resetUploadArea() {
 async function loadDocuments() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/documents`);
-        
+
         if (!response.ok) {
             throw new Error(`Failed to load documents: ${response.status}`);
         }
-        
+
         const documents = await response.json();
         displayDocuments(documents);
     } catch (error) {
@@ -357,7 +357,7 @@ function displayDocuments(documents) {
         documentsList.innerHTML = '<p class="empty-state">No documents uploaded yet</p>';
         return;
     }
-    
+
     documentsList.innerHTML = documents.map(doc => `
         <div class="document-item" data-doc-id="${doc.id}">
             <div class="document-info">
@@ -415,14 +415,14 @@ function getStatusBadge(status) {
 async function handleDocumentAction(event) {
     const button = event.target.closest('button');
     if (!button) return;
-    
+
     const action = button.dataset.action;
     const documentId = button.dataset.docId;
-    
+
     if (!action || !documentId) return;
-    
+
     event.stopPropagation();
-    
+
     switch (action) {
         case 'analyze':
             await handleAnalyzeClick(event, documentId);
@@ -442,37 +442,37 @@ async function handleAnalyzeClick(event, documentId) {
     const docItem = button.closest('.document-item');
     const statusMeta = docItem.querySelector('.document-meta');
     const originalStatus = statusMeta.innerHTML;
-    
+
     const confirmed = confirm('⚡ Analyze this document with AI?\n\nThis will:\n• Extract salary and tax data\n• Use OpenAI API credits (~$0.05-0.10)\n• Take 10-20 seconds\n\nContinue?');
     if (!confirmed) return;
-    
+
     setButtonLoading(button, 'Analyzing...');
     statusMeta.innerHTML = '🟡 Analyzing with AI... Please wait...';
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/documents/analyze/${documentId}`, {
             method: 'POST'
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
             throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         if (!result.extracted_data) {
             throw new Error('No extracted data returned from analysis');
         }
-        
+
         alert('✅ Analysis complete! Click "View Data" to see extracted information.');
-        
+
         // Reload documents
         await loadDocuments();
-        
+
         // Auto-display results (with scroll)
         displayExtractedData(result.extracted_data, true);
-        
+
     } catch (error) {
         console.error('Analysis error:', error);
         alert(`❌ Analysis failed: ${error.message}`);
@@ -485,35 +485,35 @@ async function handleAnalyzeClick(event, documentId) {
 async function handleViewClick(event, documentId) {
     const button = event.target;
     setButtonLoading(button, 'Loading...');
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/documents/${documentId}`);
-        
+
         if (!response.ok) {
             throw new Error(`Failed to load document: ${response.status}`);
         }
-        
+
         const document = await response.json();
-        
+
         if (!document.extracted_data) {
             throw new Error('No extracted data found. Try analyzing the document again.');
         }
-        
+
         let data;
         try {
-            data = typeof document.extracted_data === 'string' 
-                ? JSON.parse(document.extracted_data) 
+            data = typeof document.extracted_data === 'string'
+                ? JSON.parse(document.extracted_data)
                 : document.extracted_data;
         } catch (parseError) {
             throw new Error('Invalid data format stored in document');
         }
-        
+
         // Save to storage for auto-restore
         await saveDocumentState(documentId, data);
-        
+
         // Display data (with scroll)
         displayExtractedData(data, true);
-        
+
     } catch (error) {
         console.error('View results error:', error);
         alert(`❌ Error loading results: ${error.message}`);
@@ -524,22 +524,22 @@ async function handleViewClick(event, documentId) {
 
 async function handleDeleteClick(event, documentId) {
     const button = event.target;
-    
+
     if (!confirm('⚠️ Are you sure you want to delete this document? This action cannot be undone.')) {
         return;
     }
-    
+
     setButtonLoading(button, 'Deleting...');
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/documents/${documentId}`, {
             method: 'DELETE'
         });
-        
+
         if (!response.ok) {
             throw new Error(`Delete failed: ${response.status}`);
         }
-        
+
         // Check if we're deleting the currently displayed document
         if (resultsSection.style.display === 'block' && currentExtractedData && currentExtractedData.document_id === documentId) {
             resultsSection.style.display = 'none';
@@ -547,12 +547,12 @@ async function handleDeleteClick(event, documentId) {
             // Clear stored state
             await clearDocumentState();
         }
-        
+
         // Reload documents
         await loadDocuments();
-        
+
         alert('✅ Document deleted successfully');
-        
+
     } catch (error) {
         console.error('Delete error:', error);
         alert(`❌ Delete error: ${error.message}`);
@@ -566,15 +566,15 @@ async function handleDeleteClick(event, documentId) {
 // Helper function to fetch tax slab from backend
 async function fetchTaxSlab(annualIncome) {
     if (!annualIncome || annualIncome === 0 || isNaN(annualIncome)) return null;
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/tax/slab?income=${annualIncome}&category=SALARIED&tax_year=2025-26`);
-        
+
         if (!response.ok) {
             console.error('Failed to fetch tax slab:', response.status);
             return null;
         }
-        
+
         const result = await response.json();
         return result;
     } catch (error) {
@@ -600,22 +600,22 @@ function getPerquisites(allowances) {
 // Helper to calculate taxable income per FBR rules
 function calculateTaxableIncome(data) {
     if (!data.salary_details) return 0;
-    
+
     const annualGross = parseFloat(data.salary_details.annual_gross_salary) || 0;
     const allowances = data.allowances || {};
     const deductions = data.deductions || {};
-    
+
     // Standard deductions
     const providentFund = parseFloat(deductions.provident_fund) || 0;
     const eobi = parseFloat(deductions.eobi) || 0;
     const socialSecurity = parseFloat(deductions.social_security) || 0;
-    
+
     // Allowances that reduce taxable income
     const totalAllowances = getTotalAllowances(allowances);
-    
+
     // Taxable income calculation (per FBR IRIS rules)
     const taxableIncome = annualGross - totalAllowances - providentFund - eobi - socialSecurity;
-    
+
     return Math.max(0, taxableIncome); // Ensure non-negative
 }
 
@@ -625,32 +625,32 @@ function calculateTaxableIncome(data) {
 async function handleCopyClick(event) {
     const button = event.target.closest('.copy-btn');
     if (!button) return;
-    
+
     event.stopPropagation();
-    
+
     const fieldId = button.dataset.fieldId;
     if (!fieldId) {
         console.error('No fieldId found on copy button');
         return;
     }
-    
+
     const element = document.getElementById(fieldId);
     if (!element) {
         alert('❌ Error: Could not find text to copy');
         return;
     }
-    
+
     const displayText = element.textContent;
     const textToCopy = stripCurrencyPrefix(displayText); // Remove "Rs. " prefix
-    
+
     try {
         await navigator.clipboard.writeText(textToCopy);
-        
+
         // Show feedback
         const originalText = button.textContent;
         button.textContent = '✓ Copied!';
         button.classList.add('copied');
-        
+
         setTimeout(() => {
             button.textContent = originalText;
             button.classList.remove('copied');
@@ -668,34 +668,34 @@ async function copyAllFBRFields() {
         alert('❌ No FBR fields found to copy');
         return;
     }
-    
+
     const fieldElements = fbrSection.querySelectorAll('[id^="field_"]');
     const fields = [];
-    
+
     fieldElements.forEach(element => {
         const label = element.parentElement.parentElement.querySelector('div:first-child').textContent;
         const value = stripCurrencyPrefix(element.textContent); // Remove "Rs. " prefix
         fields.push(`${label} ${value}`);
     });
-    
+
     const clipboardText = fields.join('\n');
-    
+
     try {
         await navigator.clipboard.writeText(clipboardText);
-        
+
         // Show success feedback
         const copyAllBtn = document.getElementById('copyAllBtn');
         if (copyAllBtn) {
             const originalText = copyAllBtn.textContent;
             copyAllBtn.textContent = '✓ All Copied!';
             copyAllBtn.style.background = '#48bb78';
-            
+
             setTimeout(() => {
                 copyAllBtn.textContent = originalText;
                 copyAllBtn.style.background = '#667eea';
             }, 2000);
         }
-        
+
         alert(`✅ Copied ${fields.length} fields to clipboard!`);
     } catch (error) {
         console.error('Copy all failed:', error);
@@ -711,12 +711,17 @@ async function displayExtractedData(data, shouldScroll = true) {
         resultsSection.style.display = 'block';
         return;
     }
-    
+
     currentExtractedData = data;
+    window.currentExtractedData = data;
+
+    const autofillBtn = document.getElementById('autofillBtn');
+    if (autofillBtn) autofillBtn.style.display = 'flex';
+
     resultsSection.style.display = 'block';
-    
+
     let html = '';
-    
+
     // Employee Information
     if (data.employee_name && data.employee_name !== 'Not found') {
         html += `
@@ -729,11 +734,11 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // Salary Details with Tax Slab
     const annualGross = parseFloat(data.salary_details?.annual_gross_salary) || 0;
     const taxSlab = await fetchTaxSlab(annualGross);
-    
+
     if (data.salary_details && hasValidData(data.salary_details)) {
         html += `
             <div class="data-group">
@@ -747,7 +752,7 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // Allowances
     if (data.allowances && hasValidData(data.allowances)) {
         html += `
@@ -761,7 +766,7 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // Deductions
     if (data.deductions && hasValidData(data.deductions)) {
         html += `
@@ -774,7 +779,7 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // Bank Details
     if (data.bank_details && hasValidData(data.bank_details)) {
         html += `
@@ -787,7 +792,7 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // Other Expenses
     if (data.other_expenses && hasValidData(data.other_expenses)) {
         html += `
@@ -800,14 +805,14 @@ async function displayExtractedData(data, shouldScroll = true) {
             </div>
         `;
     }
-    
+
     // FBR IRIS Form Fields (Optimized for Copy-Paste - ORDER MATTERS!)
     if (data.salary_details || data.allowances) {
         const allowancesTotal = getTotalAllowances(data.allowances);
         const perquisites = getPerquisites(data.allowances);
         const taxableIncome = calculateTaxableIncome(data);
         const taxSlabData = await fetchTaxSlab(taxableIncome);
-        
+
         html += `
             <div class="data-group" style="background: #e8f5e9; border: 2px solid #667eea; padding: 0; margin-top: 20px;">
                 <h3 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; margin: 0; border-radius: 8px 8px 0 0; font-size: 15px;">
@@ -835,7 +840,7 @@ async function displayExtractedData(data, shouldScroll = true) {
                 </div>
             </div>
         `;
-        
+
         // Add listener for "Copy All" button
         setTimeout(() => {
             const copyAllBtn = document.getElementById('copyAllBtn');
@@ -844,7 +849,7 @@ async function displayExtractedData(data, shouldScroll = true) {
             }
         }, 100);
     }
-    
+
     // Document Info
     html += `
         <div class="data-group">
@@ -854,13 +859,13 @@ async function displayExtractedData(data, shouldScroll = true) {
             ${createDataField('Confidence', data.confidence)}
         </div>
     `;
-    
+
     if (!html) {
         html = '<p style="text-align: center; color: #999; padding: 40px;">No data could be extracted from this document. Please try uploading a salary slip instead of a bank statement.</p>';
     }
-    
+
     analysisResults.innerHTML = html;
-    
+
     // Scroll to results ONLY if shouldScroll is true
     if (shouldScroll) {
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -869,10 +874,10 @@ async function displayExtractedData(data, shouldScroll = true) {
 
 function hasValidData(obj) {
     if (!obj || typeof obj !== 'object') return false;
-    return Object.values(obj).some(val => 
-        val !== 'Not found' && 
-        val !== null && 
-        val !== undefined && 
+    return Object.values(obj).some(val =>
+        val !== 'Not found' &&
+        val !== null &&
+        val !== undefined &&
         val !== '' &&
         val !== 0
     );
@@ -882,10 +887,10 @@ function createDataField(label, value) {
     if (!value || value === 'Not found' || value === 'null' || value === null || value === undefined || value === '' || value === 0) {
         return '';
     }
-    
+
     const fieldId = `field_${label.replace(/\s+/g, '_').replace(/[()]/g, '').replace(/:/g, '')}`;
     const displayValue = String(value);
-    
+
     return `
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: white; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #667eea;">
             <div style="font-weight: 600; color: #2c3e50; font-size: 13px; flex: 1;">${escapeHtml(label)}:</div>
@@ -907,37 +912,37 @@ function formatCurrency(value) {
 // Search functionality
 async function performSearch() {
     const query = searchInput.value.trim();
-    
+
     if (!query) {
         alert('❌ Please enter a search query');
         return;
     }
-    
+
     if (query.length < 3) {
         alert('❌ Please enter at least 3 characters');
         return;
     }
-    
+
     setButtonLoading(searchBtn, 'Searching...');
     searchResults.style.display = 'block';
     searchResults.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
-    
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/documents/search?query=${encodeURIComponent(query)}`, {
             method: 'POST'
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
             throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
         }
-        
+
         const result = await response.json();
-        
+
         if (!result.answer) {
             throw new Error('No search results returned');
         }
-        
+
         searchResults.innerHTML = `
             <div class="search-result">
                 <h4 style="margin-bottom: 8px; color: #667eea;">🔍 Search Results:</h4>
@@ -947,7 +952,7 @@ async function performSearch() {
                 </p>
             </div>
         `;
-        
+
     } catch (error) {
         console.error('Search error:', error);
         searchResults.innerHTML = `

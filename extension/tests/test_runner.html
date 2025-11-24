@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autofill Mapper Tests</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1a73e8;
+        }
+
+        .log {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: #2d2d2d;
+            color: #ccc;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .pass {
+            color: #4caf50;
+        }
+
+        .fail {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Autofill Mapper Tests</h1>
+        <div id="output" class="log">Running tests...</div>
+    </div>
+
+    <script type="module">
+        import { runTests } from './mapper.test.js';
+
+        // Capture console output
+        const outputDiv = document.getElementById('output');
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        function appendLog(msg, type = 'info') {
+            const line = document.createElement('div');
+            line.textContent = msg;
+            if (msg.includes('PASS')) line.className = 'pass';
+            if (msg.includes('FAIL')) line.className = 'fail';
+            outputDiv.appendChild(line);
+        }
+
+        console.log = (msg) => {
+            originalLog(msg);
+            appendLog(msg);
+        };
+
+        console.error = (msg) => {
+            originalError(msg);
+            appendLog(msg, 'error');
+        };
+
+        try {
+            runTests();
+        } catch (e) {
+            console.error('Test runner error: ' + e.message);
+        }
+    </script>
+</body>
+
+</html>

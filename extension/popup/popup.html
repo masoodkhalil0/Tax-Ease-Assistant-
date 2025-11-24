@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaxEase</title>
     <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -28,7 +30,7 @@
         <section class="upload-section">
             <h2>Upload Tax Documents</h2>
             <p class="help-text">Upload bank statements, receipts, or transaction summaries</p>
-            
+
             <div class="upload-area" id="uploadArea">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -64,13 +66,22 @@
             <div id="searchResults" class="search-results" style="display: none;"></div>
         </section>
 
-        <!-- Analysis Results -->
-        <section class="results-section" id="resultsSection" style="display: none;">
-            <h2>📊 Extracted Tax Data</h2>
+        <!-- Analysis Results Section -->
+        <section id="resultsSection" class="results-section" style="display: none;">
+            <div class="results-header">
+                <h2>Extracted Data</h2>
+                <div class="header-actions">
+                    <button id="autofillBtn" class="btn btn-primary" style="display: none; background: #805ad5;">
+                        ⚡ Autofill Form
+                    </button>
+                </div>
+            </div>
             <div id="analysisResults"></div>
         </section>
     </div>
 
     <script src="popup.js"></script>
+    <script src="autofill-handler.js"></script>
 </body>
+
 </html>
